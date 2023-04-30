@@ -1,3 +1,2 @@
-from schemas.atleta import AtletaSchema, ListarAtletasSchema, ListarAtletaIdSchema, AdicionarAtletasSchema, FormAddAtletaSchema, DeletarAtletaIdSchema, AtletaPath
-from schemas.bateria import BateriaSchema, ResultadoSchema
-from schemas.campeonato import CampeonatoSchema, ListarCampeonatosSchema, ListarCampeonatoIdSchema, AdicionarCampeonatoSchema, FormAddCampeonatoSchema, DeletarCampeonatoIdSchema, CampeonatoPath
+from schemas.atleta import AtletaSchema, ListarAtletasSchema, ListarAtletaIdSchema, AdicionarAtletasSchema, FormAddAtletaSchema, DeletarAtletaIdSchema, AtletaPath, ErrorAdicionarAtletaSchema, ErrorDeletarAtletaSchema, ErrorEditarAtletaIdSchema, ErrorEditarAtletaSchema, ErrorAtletaIdSchema
+from schemas.campeonato import CampeonatoSchema, ListarCampeonatosSchema, ListarCampeonatoIdSchema, AdicionarCampeonatoSchema, FormAddCampeonatoSchema, DeletarCampeonatoIdSchema, CampeonatoPath, ErrorAdicionarCampeonatoSchema, ErrorDeletarCampeonatoSchema, ErrorEditarCampeonatoIdSchema, ErrorEditarCampeonatoSchema, ErrorCampeonatoIdSchema
