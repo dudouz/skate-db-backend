@@ -19,7 +19,5 @@ class Atleta(Base):
     sexo = Column(Enum("Masculino", "Feminino"))
     idade = Column(Integer)
 
-    resultados = relationship("Resultado", back_populates="atleta")
-
     def toDict(self):
         return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }

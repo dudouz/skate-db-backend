@@ -15,7 +15,5 @@ class Campeonato(Base):
     cidade = Column(String)
     data = Column(Date)
 
-    baterias = relationship("Bateria", back_populates="campeonato")
-
     def toDict(self):
         return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }

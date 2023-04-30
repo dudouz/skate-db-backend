@@ -6,7 +6,6 @@ from datetime import date
 # inicializando o db
 from model.base import Base
 from model.atleta import Atleta
-from model.bateria import Bateria, Resultado
 from model.campeonato import Campeonato
 
 
@@ -14,7 +13,7 @@ from model.campeonato import Campeonato
 db_url = 'sqlite:///database/skaters.sqlite3'
 
 # cria a conexão com o db
-engine = create_engine(db_url, echo=True)
+engine = create_engine(db_url)
 
 # instancia a sessão
 Session = sessionmaker(bind=engine)
