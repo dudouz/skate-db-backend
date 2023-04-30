@@ -4,8 +4,7 @@ from model.campeonato import Campeonato
 from datetime import date
 from flask_openapi3 import Tag, APIBlueprint, Schema, Parameter
 from model.campeonato import Campeonato
-from schemas import ListarCampeonatosSchema, AdicionarCampeonatoSchema, FormAddCampeonatoSchema, ListarCampeonatoIdSchema, DeletarCampeonatoIdSchema, CampeonatoPath
-
+from schemas import ListarCampeonatosSchema, AdicionarCampeonatoSchema, FormAddCampeonatoSchema, ListarCampeonatoIdSchema, DeletarCampeonatoIdSchema, CampeonatoPath, ErrorCampeonatoIdSchema, ErrorAdicionarCampeonatoSchema, ErrorDeletarCampeonatoSchema, ErrorEditarCampeonatoIdSchema, ErrorEditarCampeonatoSchema
 from logger import logger
 
 campeonatos_tag = Tag(name='Campeonatos', description='Operações relacionadas a campeonatos')
@@ -28,13 +27,18 @@ def listar_campeonatos():
 
     return jsonify(campeonatos_arr)
 
-@campeonato_routes.post('/campeonatos', responses={"200": AdicionarCampeonatoSchema})
+@campeonato_routes.post('/campeonatos', responses={"200": AdicionarCampeonatoSchema, "400": ErrorAdicionarCampeonatoSchema})
 def adicionar_campeonato():
     """ Adiciona um campeonato no banco de dados.
 
     """    
     session = Session()
-   
+    # valida se o form tem os dados esperados, caso nao tenha retorna erro 400:
+    if not request.form['nome'] or not request.form['cidade'] or not request.form['data']:
+        error_msg = "Formulário inválido"
+        logger.warning(f"Erro ao adicionar campeonato, {error_msg}")
+        return {"mesage": error_msg, "error": "Erro ao buscar Campeonato"}, 400
+    
     # parsear date da string
     data = date.fromisoformat(request.form['data'])
 
@@ -46,7 +50,7 @@ def adicionar_campeonato():
 
     return jsonify({'campeonato': campeonato_obj })
 
-@campeonato_routes.put('/campeonatos/<int:id>', responses={"200": AdicionarCampeonatoSchema})
+@campeonato_routes.put('/campeonatos/<int:id>', responses={"200": AdicionarCampeonatoSchema, "400": ErrorEditarCampeonatoSchema, "404": ErrorEditarCampeonatoIdSchema})
 def editar_campeonato(path: CampeonatoPath):
     """ Edita um campeonato existente no banco de dados.
 
@@ -61,15 +65,23 @@ def editar_campeonato(path: CampeonatoPath):
         error_msg = "Campeonato não encontrado na base :/"
         logger.warning(f"Erro ao buscar campeonato '{campeonato_id}', {error_msg}")
         return {"mesage": error_msg}, 404
+    
+    # valida se o form tem os dados esperados, caso nao tenha retorna erro 400:
+    if not request.form['nome'] or not request.form['cidade'] or not request.form['data']:
+        error_msg = "Formulário inválido"
+        logger.warning(f"Erro ao editar campeonato, {error_msg}")
+        return {"mesage": error_msg, "error": "Erro ao buscar Campeonato"}, 400
+    
     campeonato.nome = request.form['nome']
     campeonato.cidade = request.form['cidade']
     data = date.fromisoformat(request.form['data'])
     campeonato.data = data
+    
     session.commit()
     
     return jsonify({ 'campeonato': campeonato.toDict()})
 
-@campeonato_routes.get('/campeonatos/<int:id>',  responses={"200": ListarCampeonatoIdSchema})
+@campeonato_routes.get('/campeonatos/<int:id>',  responses={"200": ListarCampeonatoIdSchema, "404": ErrorCampeonatoIdSchema})
 def listar_campeonatos_por_id(path: CampeonatoPath):
     """ Retorna campeonato específico cadastrados no banco de dados, de acordo com o ID especificado.
     """
@@ -89,7 +101,7 @@ def listar_campeonatos_por_id(path: CampeonatoPath):
     return jsonify({ 'campeonato': campeonato.toDict()})
 
 
-@campeonato_routes.delete('/campeonatos/<int:id>', responses={"200": DeletarCampeonatoIdSchema})
+@campeonato_routes.delete('/campeonatos/<int:id>', responses={"200": DeletarCampeonatoIdSchema, "404": ErrorCampeonatoIdSchema})
 def deletar_atleta(path: CampeonatoPath):
     """ Deleta um campeonato no banco de dados.
 

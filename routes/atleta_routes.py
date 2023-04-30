@@ -2,7 +2,7 @@ from flask_openapi3 import Tag, APIBlueprint
 from flask import jsonify, request
 from model import Session
 from model.atleta import Atleta
-from schemas import ListarAtletasSchema, AdicionarAtletasSchema, FormAddAtletaSchema, ListarAtletaIdSchema, DeletarAtletaIdSchema
+from schemas import ListarAtletasSchema, AdicionarAtletasSchema, FormAddAtletaSchema, ListarAtletaIdSchema, DeletarAtletaIdSchema, ErrorEditarAtletaSchema, ErrorEditarAtletaIdSchema, ErrorDeletarAtletaSchema, ErrorAdicionarAtletaSchema, ErrorAtletaIdSchema
 from logger import logger
 from schemas.atleta import AtletaPath
 
@@ -26,16 +26,10 @@ def listar_atletas():
     for atleta in atletas:
         atletas_arr.append(atleta.toDict())
 
-    # retorna erro se o array for vazio:
-    if not atletas_arr:
-        error_msg = "Nenhum Atleta foi  encontrado na base."
-        logger.warning(f"Erro ao listar atletas:', {error_msg}")
-        return {"mesage": error_msg}, 404
-
     return jsonify(atletas_arr)
 
 
-@atleta_routes.get('/atletas/<int:id>',  responses={"200": ListarAtletaIdSchema})
+@atleta_routes.get('/atletas/<int:id>',  responses={"200": ListarAtletaIdSchema, "404": ErrorAtletaIdSchema})
 def listar_atletas_por_id(path: AtletaPath):
     """ Retorna atleta específico cadastrados no banco de dados, de acordo com o ID especificado.
     """
@@ -47,19 +41,25 @@ def listar_atletas_por_id(path: AtletaPath):
 
     if not atleta:
         # se o atleta não foi encontrado
-        error_msg = "Atleta não encontrado na base :/"
+        error_msg = "Id Não Encontrado / inválido."
         logger.warning(f"Erro ao buscar atleta '{atleta_id}', {error_msg}")
-        return {"mesage": error_msg}, 404
+        return {"mesage": error_msg, "error": "Erro ao buscar Atleta"}, 404 
 
     return jsonify({'atleta': atleta.toDict()})
 
 
-@atleta_routes.post('/atletas', responses={"200": AdicionarAtletasSchema})
+@atleta_routes.post('/atletas', responses={"200": AdicionarAtletasSchema, "400": ErrorAdicionarAtletaSchema})
 def adicionar_atleta(form: FormAddAtletaSchema):
     """ Adiciona um atleta no banco de dados.
 
     """
     session = Session()
+    # valida se o form tem os dados esperados, caso nao tenha retorna erro 400:
+    if not request.form['name'] or not request.form['sexo'] or not request.form['idade'] or not request.form['cidade'] or not request.form['categoria']:
+        error_msg = "Formulário inválido"
+        logger.warning(f"Erro ao adicionar atleta, {error_msg}")
+        return {"mesage": error_msg, "error": "Erro ao adicionar atleta"}, 400
+
     atleta = Atleta(request.form['nome'], request.form['sexo'],
                     request.form['idade'], request.form['cidade'], request.form['categoria'])
     atleta_obj = atleta.toDict()
@@ -70,7 +70,7 @@ def adicionar_atleta(form: FormAddAtletaSchema):
     return jsonify({'atleta': atleta_obj})
 
 
-@atleta_routes.put('/atletas/<int:id>', responses={"200": AdicionarAtletasSchema})
+@atleta_routes.put('/atletas/<int:id>', responses={"200": AdicionarAtletasSchema, "400": ErrorEditarAtletaSchema, "404": ErrorEditarAtletaIdSchema})
 def editar_atleta(path: AtletaPath):
     """ Edita um atleta existente no banco de dados.
 
@@ -81,9 +81,15 @@ def editar_atleta(path: AtletaPath):
     atleta = session.query(Atleta).filter(Atleta.id == atleta_id).first()
     if not atleta:
         # se o atleta não foi encontrado
-        error_msg = "Atleta não encontrado na base :/"
+        error_msg = "Id Não Encontrado / inválido."
         logger.warning(f"Erro ao buscar atleta '{atleta_id}', {error_msg}")
         return {"mesage": error_msg}, 404
+    
+    # valida se o form tem os dados esperados, caso nao tenha retorna erro 400:
+    if not request.form['name'] or not request.form['sexo'] or not request.form['idade'] or not request.form['cidade'] or not request.form['categoria']:
+        error_msg = "Formulário inválido. Todos os campos são obrigatórios."
+        logger.warning(f"Erro ao adicionar atleta, {error_msg}")
+        return {"mesage": error_msg, "error": "Erro ao encontrar Atleta"}, 400
 
     atleta.nome = request.form['nome']
     atleta.sexo = request.form['sexo']
@@ -99,7 +105,7 @@ def editar_atleta(path: AtletaPath):
     return jsonify({'atleta': atleta_obj})
 
 
-@atleta_routes.delete('/atletas/<int:id>', responses={"200": DeletarAtletaIdSchema})
+@atleta_routes.delete('/atletas/<int:id>', responses={"200": DeletarAtletaIdSchema, "404": ErrorDeletarAtletaSchema})
 def deletar_atleta(path: AtletaPath):
     """ Deleta um atleta no banco de dados.
 
@@ -112,9 +118,9 @@ def deletar_atleta(path: AtletaPath):
 
     if not atleta:
         # se o atleta não foi encontrado
-        error_msg = "Atleta não encontrado na base :/"
+        error_msg = "Id Não Encontrado / inválido."
         logger.warning(f"Erro ao deletar atleta '{atleta_id}', {error_msg}")
-        return {"mesage": error_msg}, 404
+        return {"mesage": error_msg, "error": "Erro ao deletar Atleta"}, 404
 
     session.delete(atleta)
     atleta_obj = atleta.toDict()

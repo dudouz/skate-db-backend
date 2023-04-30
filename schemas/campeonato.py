@@ -39,3 +39,40 @@ class FormAddCampeonatoSchema(BaseModel):
 class CampeonatoPath(BaseModel):
     id: int = Field(..., description='ID do Campeonato')
 
+
+class ErrorCampeonatoIdSchema(BaseModel):
+    """ Define como um erro é retornado.
+    """
+    error: str = "Erro ao buscar Campeonato."
+    message: str = "Id Não Encontrado / inválido."
+    code: int = 404
+
+
+class ErrorAdicionarCampeonatoSchema(BaseModel):
+    """ Define como um erro é retornado.
+    """
+    error: str = "Erro ao adicionar campeonato."
+    message: str = "Formulário inválido."
+    code: int = 400
+
+class ErrorDeletarCampeonatoSchema(BaseModel):
+    """ Define como um erro é retornado.
+    """
+    error: str = "Erro ao deletar campeonato."
+    message: str = "Id Não Encontrado / inválido."
+    code: int = 404
+
+
+class ErrorEditarCampeonatoIdSchema(BaseModel):
+    """ Define como um erro é retornado.
+    """
+    error: str = "Erro ao editar campeonato."
+    message: str = "Id Não Encontrado / inválido."
+    code: int = 404
+
+class ErrorEditarCampeonatoSchema(BaseModel):
+    """ Define como um erro é retornado.
+    """
+    error: str = "Erro ao editar campeonato."
+    message: str = "Formulário inválido."
+    code: int = 400

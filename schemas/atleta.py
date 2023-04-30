@@ -59,3 +59,40 @@ def lista_atletas(atletas: List[Atleta]):
 
 class AtletaPath(BaseModel):
     id: int = Field(..., description='ID do atleta')
+
+
+class ErrorAtletaIdSchema(BaseModel):
+    """ Define como um erro é retornado.
+    """
+    error: str = "Erro ao buscar Atleta."
+    message: str = "Id Não Encontrado / inválido."
+    code: int = 404
+
+class ErrorAdicionarAtletaSchema(BaseModel):
+    """ Define como um erro é retornado.
+    """
+    error: str = "Erro ao adicionar Atleta."
+    message: str = "Formulário inválido."
+    code: int = 400
+
+class ErrorDeletarAtletaSchema(BaseModel):
+    """ Define como um erro é retornado.
+    """
+    error: str = "Erro ao deletar Atleta."
+    message: str = "Id Não Encontrado / inválido."
+    code: int = 404
+
+
+class ErrorEditarAtletaIdSchema(BaseModel):
+    """ Define como um erro é retornado.
+    """
+    error: str = "Erro ao editar Atleta."
+    message: str = "Id Não Encontrado / inválido."
+    code: int = 404
+
+class ErrorEditarAtletaSchema(BaseModel):
+    """ Define como um erro é retornado.
+    """
+    error: str = "Erro ao editar Atleta."
+    message: str = "Formulário inválido."
+    code: int = 400
