@@ -51,7 +51,7 @@ def adicionar_campeonato():
     return jsonify({'campeonato': campeonato_obj })
 
 @campeonato_routes.put('/campeonatos/<int:id>', responses={"200": AdicionarCampeonatoSchema, "400": ErrorEditarCampeonatoSchema, "404": ErrorEditarCampeonatoIdSchema})
-def editar_campeonato(path: CampeonatoPath):
+def editar_campeonato(path: CampeonatoPath, form: FormAddCampeonatoSchema):
     """ Edita um campeonato existente no banco de dados.
 
     """

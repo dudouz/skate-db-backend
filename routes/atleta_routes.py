@@ -55,7 +55,7 @@ def adicionar_atleta(form: FormAddAtletaSchema):
     """
     session = Session()
     # valida se o form tem os dados esperados, caso nao tenha retorna erro 400:
-    if not request.form['name'] or not request.form['sexo'] or not request.form['idade'] or not request.form['cidade'] or not request.form['categoria']:
+    if not request.form['nome'] or not request.form['sexo'] or not request.form['idade'] or not request.form['cidade'] or not request.form['categoria']:
         error_msg = "Formulário inválido"
         logger.warning(f"Erro ao adicionar atleta, {error_msg}")
         return {"mesage": error_msg, "error": "Erro ao adicionar atleta"}, 400
@@ -71,7 +71,7 @@ def adicionar_atleta(form: FormAddAtletaSchema):
 
 
 @atleta_routes.put('/atletas/<int:id>', responses={"200": AdicionarAtletasSchema, "400": ErrorEditarAtletaSchema, "404": ErrorEditarAtletaIdSchema})
-def editar_atleta(path: AtletaPath):
+def editar_atleta(path: AtletaPath, form: FormAddAtletaSchema):
     """ Edita um atleta existente no banco de dados.
 
     """
@@ -86,7 +86,7 @@ def editar_atleta(path: AtletaPath):
         return {"mesage": error_msg}, 404
     
     # valida se o form tem os dados esperados, caso nao tenha retorna erro 400:
-    if not request.form['name'] or not request.form['sexo'] or not request.form['idade'] or not request.form['cidade'] or not request.form['categoria']:
+    if not request.form['nome'] or not request.form['sexo'] or not request.form['idade'] or not request.form['cidade'] or not request.form['categoria']:
         error_msg = "Formulário inválido. Todos os campos são obrigatórios."
         logger.warning(f"Erro ao adicionar atleta, {error_msg}")
         return {"mesage": error_msg, "error": "Erro ao encontrar Atleta"}, 400
