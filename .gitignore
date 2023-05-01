@@ -2,4 +2,4 @@
 venv
 log
 .vscode
-database/**/*
+database/skaters.sqlite3
