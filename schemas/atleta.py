@@ -22,12 +22,12 @@ class ListarAtletasSchema(BaseModel):
 class ListarAtletaIdSchema(BaseModel):
     """ Define como uma lista de atletas é retornada.
     """
-    id: str = "1"
+    atleta: AtletaSchema
 
 class DeletarAtletaIdSchema(BaseModel):
     """ Define como uma lista de atletas é retornada.
     """
-    id: str = "1"
+    atleta: AtletaSchema
 
 
 
@@ -42,21 +42,6 @@ class FormAddAtletaSchema(BaseModel):
     cidade: str
     sexo: str
     idade: int
-
-def lista_atletas(atletas: List[Atleta]):
-    """ Retorna uma lista de atletas
-    """
-    result = []
-    for atleta in atletas:
-        result.append({
-            "nome": atleta.nome,
-            "cidade": atleta.cidade,
-            "categoria": atleta.categoria,
-            "sexo": atleta.sexo,
-            "idade": atleta.idade
-        })
-    return {"atletas": result}
-
 class AtletaPath(BaseModel):
     id: int = Field(..., description='ID do atleta')
 

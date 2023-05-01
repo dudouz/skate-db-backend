@@ -1,8 +1,8 @@
 from flask import jsonify, request
 from model import Session
 from model.campeonato import Campeonato
-from datetime import date
-from flask_openapi3 import Tag, APIBlueprint, Schema, Parameter
+from datetime import date, datetime
+from flask_openapi3 import Tag, APIBlueprint
 from model.campeonato import Campeonato
 from schemas import ListarCampeonatosSchema, AdicionarCampeonatoSchema, FormAddCampeonatoSchema, ListarCampeonatoIdSchema, DeletarCampeonatoIdSchema, CampeonatoPath, ErrorCampeonatoIdSchema, ErrorAdicionarCampeonatoSchema, ErrorDeletarCampeonatoSchema, ErrorEditarCampeonatoIdSchema, ErrorEditarCampeonatoSchema
 from logger import logger
@@ -28,8 +28,9 @@ def listar_campeonatos():
     return jsonify(campeonatos_arr)
 
 @campeonato_routes.post('/campeonatos', responses={"200": AdicionarCampeonatoSchema, "400": ErrorAdicionarCampeonatoSchema})
-def adicionar_campeonato():
+def adicionar_campeonato(form: FormAddCampeonatoSchema):
     """ Adiciona um campeonato no banco de dados.
+        Atente-se ao formato de data correto que é YYYY-MM-DD (ano-mes-dia)
 
     """    
     session = Session()
@@ -39,16 +40,16 @@ def adicionar_campeonato():
         logger.warning(f"Erro ao adicionar campeonato, {error_msg}")
         return {"mesage": error_msg, "error": "Erro ao buscar Campeonato"}, 400
     
-    # parsear date da string
-    data = date.fromisoformat(request.form['data'])
+    # converter string "YYYY-MM-DD" para date
+    date_format = '%Y-%m-%d'
+    data = datetime.strptime(request.form['data'], date_format).date()
 
     campeonato = Campeonato(request.form['nome'], request.form['cidade'], data=data)
-    campeonato_obj = campeonato.toDict()
     
     session.add(campeonato)
     session.commit()
 
-    return jsonify({'campeonato': campeonato_obj })
+    return jsonify({'campeonato': {"nome": campeonato.nome, "cidade": campeonato.cidade, "data": campeonato.data} })
 
 @campeonato_routes.put('/campeonatos/<int:id>', responses={"200": AdicionarCampeonatoSchema, "400": ErrorEditarCampeonatoSchema, "404": ErrorEditarCampeonatoIdSchema})
 def editar_campeonato(path: CampeonatoPath, form: FormAddCampeonatoSchema):

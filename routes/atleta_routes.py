@@ -83,7 +83,7 @@ def editar_atleta(path: AtletaPath, form: FormAddAtletaSchema):
         # se o atleta não foi encontrado
         error_msg = "Id Não Encontrado / inválido."
         logger.warning(f"Erro ao buscar atleta '{atleta_id}', {error_msg}")
-        return {"mesage": error_msg}, 404
+        return {"mesage": error_msg, "error": "Erro ao editar Atleta"}, 404
     
     # valida se o form tem os dados esperados, caso nao tenha retorna erro 400:
     if not request.form['nome'] or not request.form['sexo'] or not request.form['idade'] or not request.form['cidade'] or not request.form['categoria']:
